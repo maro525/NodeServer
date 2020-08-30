@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <title>websocket-chat</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Websocket Chat</h1>
+    <form class="form-inline">
+      <div class="form-group">
+        <label class="roomLabel" for="rooms">部屋:</label>
+        <select class="form-control" id="rooms">
+          <option value="room01">部屋01</option>
+          <option value="room02">部屋02</option>
+        </select>
+        <label class="nameLabel" for="msgForm">名前：</label>
+        <input type="text" class="form-control" id="msgForm">
+      </div>
+      <button type="submit" class="btn btn-primary" id="sendButton">入室</button>
+    </form>
+    <br>
+    <div id="chatLogs">
+      <p>=====チャットログ=====</p>
+    </div>
+    <br>
+    <div id="fortune">
+      <p>=====今日の運勢=====</p>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var chat = io('http://localhost:3000/chat');
+    var fortune = io('http://localhost:3000/fortune');
+    var isEnter = false;
+    var name = "";
+
+    chat.on("server_to_client", (data) => {
+      appendMsg(data.value);
+    });
+
+    fortune.on('server_to_client', (data) => {
+      appendFortune(data.value);
+    })
+
+    function appendMsg(text) {
+      $("#chatLogs").append("<div>" + text + "</div>");
+    }
+
+    function appendFortune(text) {
+      $("#fortune").append("<div>" + text + "</div>");
+    }
+
+    $("form").submit((e) => {
+      var message = $("#msgForm").val();
+      var selectRoom = $("#rooms").val();
+      $("#msgForm").val("");
+      if (isEnter) {
+        message = "[" + name + "]: " + message;
+        chat.emit("client_to_server", { value: message });
+      } else {
+        name = message;
+        var entryMessage = name + "さんが入室しました.";
+        chat.emit("client_to_server_join", {value : selectRoom});
+        chat.emit("client_to_server_broadcast", { value: entryMessage });
+        chat.emit("client_to_server_personal", {value: name});
+        changeLabel();
+      }
+      e.preventDefault();
+    });
+
+    function changeLabel() {
+      $(".nameLabel").text("メッセージ:");
+      $("#rooms").prop("disabled", true);
+      $("button").text("送信");
+      isEnter = true;
+    }
+  </script>
+</body>
+
+</html>
