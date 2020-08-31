@@ -17,5 +17,8 @@ client.subscribe('topic0', (err, granted) => {
 });
 
 client.on('message', (topic, message) => {
-  console.log('subscriber on.message', 'topic:', topic, 'message:', message.toString());
+  console.log('subscriber on.message topic:', topic);
+  const parsed_obj = JSON.parse(message);
+  // デバッグ用
+  console.log(JSON.stringify(parsed_obj));
 });

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import paho.mqtt.client as mqtt
+import json
+import pprint
 
 CLIENT_ID = 'd12d677a'
 CLIEND_PASS = '4f1245329c3363c8'
@@ -15,7 +17,10 @@ def on_disconenct(client, userdata, flag, rc):
         print("Unexpected disconnection.")
 
 def on_message(client, userdata, msg):
-    print("Received message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
+    print("Received message on topic " + msg.topic + "' with QoS " + str(msg.qos))
+    received_data = msg.payload
+    dict_data = json.loads(received_data)
+    pprint.pprint(dict_data)
 
 client = mqtt.Client("py-sub")
 client.username_pw_set(CLIENT_ID, CLIEND_PASS)

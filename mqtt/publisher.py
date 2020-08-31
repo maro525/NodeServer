@@ -2,6 +2,9 @@
 
 import paho.mqtt.client as mqtt
 from time import sleep
+import random
+import json
+import pprint
 
 CLIENT_ID = 'd12d677a'
 CLIEND_PASS = '4f1245329c3363c8'
@@ -30,8 +33,37 @@ def main():
     mqttClient.loop_start()
 
     while True:
-        mqttClient.publish("topic0", "hello")
-        sleep(3)
+        json_person_data = { "person": [
+            {
+                "pos" : {
+                    "x": random.randint(0, 100),
+                    "y": random.randint(0, 100)
+                },
+                "age": random.randint(0, 40),
+                "emotion": "happy"
+            },
+            {
+                "pos" : {
+                    "x": random.randint(0, 100),
+                    "y": random.randint(0, 100)
+                },
+                "age": random.randint(0, 40),
+                "emotion": "angry"
+            },
+            {
+                "pos" : {
+                    "x": random.randint(0, 100),
+                    "y": random.randint(0, 100)
+                },
+                "age": random.randint(0, 40),
+                "emotion": "tired"
+            },
+
+        ]}
+        msg = json.dumps(json_person_data)
+        pprint.pprint(msg)
+        mqttClient.publish("topic0", msg)
+        sleep(1)
 
 if __name__ == '__main__':
     main()
