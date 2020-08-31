@@ -1,37 +1,37 @@
-# -*- coding: utf-8
+# -*- coding: utf-8 -*-
 
 import paho.mqtt.client as mqtt
+from time import sleep
 
 CLIENT_ID = 'd12d677a'
-CLIEND_PASS = '4f1245329c3363c'
-serverAddress = 'broker.shiftr.io'
-mqttClient = mqtt.client(serverAddress)
+CLIEND_PASS = '4f1245329c3363c8'
+SERVER_ADDRESS = 'broker.shiftr.io'
 
-mqttClient.onConnectionLost = onConnectionLost
-mqttClient.onMessageArrived = onMessageArrived
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code " + str(rc))
 
-options = {
-    userName: CLIENT_ID,
-    password: CLIEND_PASS,
-    useSSL: false,
-    onSuccess: onConnect,
-    onFailure: doFail
-}
 
-mqttCliet.connect(options)
-mqttClient.loop_start()
+def on_disconnect(client, userdata, flag, rc):
+    if rc != 0:
+        print("Unexpected disconnection.")
 
-def onConnect(mqttClient, obj, flags, rc):
-    print("onconnect")
-    message.destinationname = "topic0";
-    mqttClient.send(message)
+def on_publish(client, userdata, mid):
+    print("publish: {0}".format(mid))
 
-def doFail(e):
-    print(e)
+def main():
+    mqttClient = mqtt.Client("py-pub")
+    mqttClient.username_pw_set(CLIENT_ID, CLIEND_PASS)
+    mqttClient.on_connect = on_connect
+    mqttClient.on_disconnect = on_disconnect
+    mqttClient.on_publish = on_publish
 
-def onConnectionLost(res):
-    if res.errorCode != 0:
-        print("onConnectionLost:", res.errorMessage) 
+    mqttClient.connect(SERVER_ADDRESS)
 
-def onMessageArrived(mes):
-    print("onMessageArrived:", mes.payloadString)
+    mqttClient.loop_start()
+
+    while True:
+        mqttClient.publish("topic0", "hello")
+        sleep(3)
+
+if __name__ == '__main__':
+    main()
