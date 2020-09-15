@@ -4,9 +4,8 @@ import paho.mqtt.client as mqtt
 import json
 import pprint
 
-CLIENT_ID = 'd12d677a'
-CLIEND_PASS = '4f1245329c3363c8'
-SERVER_ADDRESS = 'broker.shiftr.io'
+# SERVER_ADDRESS = 'broker.shiftr.io'
+SERVER_ADDRESS = '192.168.0.100'
 
 def on_connect(client, userdata, flag, rc):
     print("Connected with result code " + str(rc))
@@ -23,7 +22,7 @@ def on_message(client, userdata, msg):
     pprint.pprint(dict_data)
 
 client = mqtt.Client("py-sub")
-client.username_pw_set(CLIENT_ID, CLIEND_PASS)
+# client.username_pw_set(CLIENT_ID, CLIEND_PASS)
 client.on_connect = on_connect
 client.on_disconnect = on_disconenct
 client.on_message = on_message

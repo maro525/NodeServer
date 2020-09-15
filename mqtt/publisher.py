@@ -6,9 +6,8 @@ import random
 import json
 import pprint
 
-CLIENT_ID = 'd12d677a'
-CLIEND_PASS = '4f1245329c3363c8'
-SERVER_ADDRESS = 'broker.shiftr.io'
+# SERVER_ADDRESS = 'broker.shiftr.io'
+SERVER_ADDRESS = '192.168.0.180'
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
@@ -23,7 +22,7 @@ def on_publish(client, userdata, mid):
 
 def main():
     mqttClient = mqtt.Client("py-pub")
-    mqttClient.username_pw_set(CLIENT_ID, CLIEND_PASS)
+    # mqttClient.username_pw_set(CLIENT_ID, CLIEND_PASS)
     mqttClient.on_connect = on_connect
     mqttClient.on_disconnect = on_disconnect
     mqttClient.on_publish = on_publish
